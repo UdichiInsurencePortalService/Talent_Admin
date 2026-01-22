@@ -23,7 +23,7 @@ export default function Question() {
   // ---------------- FETCH EXAMS ----------------
   useEffect(() => {
     axios
-      .get("http://localhost:8080/api/exams")
+      .get("https://talent-backend-i83x.onrender.com/api/exams")
       .then((res) => {
         setExams(res.data.data || []);
       })

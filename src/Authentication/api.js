@@ -1,7 +1,7 @@
 import axios from "axios";
 
 const api = axios.create({
-  baseURL: "http://localhost:8080/api",
+  baseURL: "https://talent-backend-i83x.onrender.com/api",
   withCredentials: true,  // ⭐ allows sending HttpOnly cookies
 });
 

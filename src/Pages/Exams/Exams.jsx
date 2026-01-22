@@ -65,7 +65,7 @@ export const Exams = () => {
 
     try {
       setCreateLoading(true);
-      await axios.post("http://localhost:8080/api/create-exam", formData, {
+      await axios.post("https://talent-backend-i83x.onrender.com/api/create-exam", formData, {
         withCredentials: true,
       });
 
@@ -103,7 +103,7 @@ export const Exams = () => {
     setScheduleLoading(true);
 
     await axios.post(
-      "http://localhost:8080/api/schedule-exam",
+      "https://talent-backend-i83x.onrender.com/api/schedule-exam",
       {
         exam_code: examCode,
         exam_name: scheduleExamName,

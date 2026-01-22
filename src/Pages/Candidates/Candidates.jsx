@@ -16,7 +16,7 @@ const Candidates = () => {
      FETCH DATA
   ======================= */
   const fetchCandidates = async () => {
-    const res = await axios.get("http://localhost:8080/api/candidates");
+    const res = await axios.get("https://talent-backend-i83x.onrender.com/api/candidates");
     setCandidates(res.data.data || []);
   };
 

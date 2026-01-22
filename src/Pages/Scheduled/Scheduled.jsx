@@ -27,7 +27,7 @@ const ScheduledExams = () => {
     const fetchExams = async () => {
       try {
         const res = await axios.get(
-          "http://localhost:8080/api/scheduled-exams"
+          "https://talent-backend-i83x.onrender.com/api/scheduled-exams"
         );
         setExams(res.data.data || []);
       } catch {
