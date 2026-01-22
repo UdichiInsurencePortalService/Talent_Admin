@@ -13,7 +13,7 @@ function useDebounce(value, delay = 400) {
   return debounced;
 }
 
-export default function Question() {
+export default function QuestionBank() {
   const [exams, setExams] = useState([]);
   const [search, setSearch] = useState("");
   const [loading, setLoading] = useState(true);

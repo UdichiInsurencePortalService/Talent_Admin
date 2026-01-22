@@ -18,8 +18,8 @@ import { useNavigate } from 'react-router-dom';
 import api from '../../Authentication/api'; // axios instance with withCredentials: true
 import Dashboard from '../../Pages/Dashboard/Dashboard';
 import Candidates from '../../Pages/Candidates/Candidates';
-import Question from '../../Pages/QuestionBank/question';
 import Scheduled from '../../Pages/Scheduled/Scheduled';
+import QuestionBank from '../../Pages/QuestionBank/QuestionBank';
 
 const { Header, Sider, Content } = Layout;
 const { useBreakpoint } = Grid;
@@ -127,7 +127,7 @@ export default function Admin() {
   }
 
    function renderQuestions() {
-    return (<Question/>);
+    return (<QuestionBank/>);
   }
 
   function renderScheduled() {
