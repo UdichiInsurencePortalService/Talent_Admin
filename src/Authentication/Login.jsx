@@ -10,20 +10,30 @@ export default function Login() {
   const [error, setError] = useState("");
 
   const handleLogin = async (e) => {
-    e.preventDefault();
-    setLoading(true);
-    setError("");
+  e.preventDefault();
+  setLoading(true);
+  setError("");
 
-    try {
-      await api.post("/auth/login", { email, password });
-      localStorage.setItem("isAdminLoggedIn", "true");
+  try {
+    const res = await api.post("/auth/login", {
+      email,
+      password,
+    });
 
-      navigate("/admin"); // redirect after success
-    } catch (err) {
-      setError(err.response?.data?.error || "Login failed");
-    }
+    // ✅ SAVE TOKEN
+    localStorage.setItem("token", res.data.token);
+
+    // (optional UI flag)
+    localStorage.setItem("isAdminLoggedIn", "true");
+
+    navigate("/admin");
+  } catch (err) {
+    setError(err.response?.data?.error || "Login failed");
+  } finally {
     setLoading(false);
-  };
+  }
+};
+
 
   return (
     <div style={styles.page}>
