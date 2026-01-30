@@ -20,6 +20,7 @@ import Dashboard from '../../Pages/Dashboard/Dashboard';
 import Candidates from '../../Pages/Candidates/Candidates';
 import Scheduled from '../../Pages/Scheduled/Scheduled';
 import QuestionBank from '../../Pages/QuestionBank/QuestionBank';
+import Attendence from '../../Pages/Attendence/Attendence';
 
 const { Header, Sider, Content } = Layout;
 const { useBreakpoint } = Grid;
@@ -53,37 +54,23 @@ export default function Admin() {
     if (!screens.lg) setCollapsed(true);
   }, [screens.lg]);
 
-  // ---------- PROTECTION: verify auth on mount ----------
-  useEffect(() => {
-    let mounted = true;
-    async function checkAuth() {
-      try {
-        setLoadingAuth(true);
-        const res = await api.get('auth/me'); // expects { user: {...} }
-        if (!mounted) return;
-        setUser(res.data.user || null);
-        setLoadingAuth(false);
-      } catch (err) {
-        // not authenticated -> go to login
-        setLoadingAuth(false);
-        navigate('/login', { replace: true });
-      }
-    }
-    checkAuth();
-    return () => { mounted = false; };
-  }, [navigate]);
+ useEffect(() => {
+  api.get("/auth/me")
+    .then(res => {
+      setUser(res.data.user);
+      setLoadingAuth(false);
+    })
+    .catch(() => {
+      setLoadingAuth(false);
+    });
+}, []);
+
 
   // ---------- Logout ----------
-  const handleLogout = async () => {
-  try {
-    await api.post("/auth/logout");
-  } catch (e) {}
-
-  // ✅ clear auth flag
-  localStorage.removeItem("isAdminLoggedIn");
-
-  navigate("/login", { replace: true });
+const handleLogout = () => {
+  window.location.href = "/login";
 };
+
 
 
   // keep original theme & UI
@@ -104,6 +91,8 @@ export default function Admin() {
     { key: 'dashboard', icon: <DashboardOutlined />, label: 'Dashboard' },
     { key: 'exam', icon: <VideoCameraOutlined />, label: 'Exam' },
     { key: 'scheduled', icon: <ScheduleOutlined />, label: 'Scheduled Exam' },
+        { key: 'Attendence', icon: <ScheduleOutlined />, label: 'Attendence' },
+
 
     { key: 'candidates', icon: <UserOutlined />, label: 'Candidates' },
     { key: 'question', icon: <FileTextOutlined />, label: 'Question Bank' },
@@ -132,6 +121,10 @@ export default function Admin() {
 
   function renderScheduled() {
     return (<Scheduled/>);
+  }
+
+   function renderAttendence() {
+    return (<Attendence/>)
   }
 
   // function renderOtherPages() {
@@ -226,6 +219,8 @@ export default function Admin() {
           {selected === 'candidates' && renderCandidates()}
           {selected === 'question' && renderQuestions()}
             {selected === 'scheduled' && renderScheduled()}
+            {selected === 'Attendence' && renderAttendence()}
+
 
 
 

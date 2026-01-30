@@ -61,57 +61,72 @@ const ScheduledExams = () => {
   }, [exams, debouncedSearch]);
 
   /* ---------------- TABLE ---------------- */
-  const Table = ({ data }) => (
-    <div className="table-wrapper">
-      <table className="exam-table">
-        <thead>
+ const Table = ({ data }) => (
+  <div className="table-wrapper">
+    <table className="exam-table">
+      <thead>
+        <tr>
+          <th>Exam Code</th>
+          <th>Exam Name</th>
+          <th>Subject</th>
+          <th>Exam Date</th>
+          <th>Exam Time</th>
+          <th>Duration</th>
+          <th>Assessor</th>
+          <th>Institution</th>
+          <th>City</th>
+          <th>Area</th>
+          <th>Radius</th>
+          <th>Status</th>
+        </tr>
+      </thead>
+
+      <tbody>
+        {data.length === 0 ? (
           <tr>
-            <th>Exam Code</th>
-            <th>Exam Name</th>
-            <th>Subject</th>
-            <th>Date</th>
-            <th>Time</th>
-            <th>Duration</th>
-            <th>Assessor</th>
-            <th>Status</th>
+            <td colSpan="12" className="empty">
+              No exams available
+            </td>
           </tr>
-        </thead>
-        <tbody>
-          {data.length === 0 ? (
-            <tr>
-              <td colSpan="8" className="empty">
-                No exams available
+        ) : (
+          data.map((e) => (
+            <tr key={e.id}>
+              <td>{e.exam_code}</td>
+              <td>{e.exam_name}</td>
+              <td>{e.subject_name}</td>
+
+              <td>
+                <CalendarOutlined />{" "}
+                {new Date(e.exam_date).toLocaleDateString()}
+              </td>
+
+              <td>
+                <ClockCircleOutlined /> {e.exam_time}
+              </td>
+
+              <td>{e.duration_minutes} mins</td>
+
+              <td>
+                <UserOutlined /> {e.assessor_name}
+              </td>
+
+              <td>{e.institution_name}</td>
+              <td>{e.center_city}</td>
+              <td>{e.center_area}</td>
+              <td>{e.allowed_radius} m</td>
+
+              <td>
+                <span className={`status-pill ${e.status.toLowerCase()}`}>
+                  {e.status}
+                </span>
               </td>
             </tr>
-          ) : (
-            data.map((e) => (
-              <tr key={e.id}>
-                <td>{e.exam_code}</td>
-                <td>{e.exam_name}</td>
-                <td>{e.subject_name}</td>
-                <td>
-                  <CalendarOutlined />{" "}
-                  {new Date(e.exam_date).toLocaleDateString()}
-                </td>
-                <td>
-                  <ClockCircleOutlined /> {e.exam_time}
-                </td>
-                <td>{e.duration_minutes} mins</td>
-                <td>
-                  <UserOutlined /> {e.assessor_name}
-                </td>
-                <td>
-                  <span className={`status-pill ${e.status.toLowerCase()}`}>
-                    {e.status}
-                  </span>
-                </td>
-              </tr>
-            ))
-          )}
-        </tbody>
-      </table>
-    </div>
-  );
+          ))
+        )}
+      </tbody>
+    </table>
+  </div>
+);
 
   if (loading) {
     return (

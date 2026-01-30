@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { io } from "socket.io-client";
 
-const socket = io("http://localhost:8080");
+const socket = io("https://talent-backend-i83x.onrender.com");
 
 const Livemonitoring = ({ examCode }) => {
   const [events, setEvents] = useState([]);

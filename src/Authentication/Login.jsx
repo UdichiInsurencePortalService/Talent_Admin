@@ -9,30 +9,21 @@ export default function Login() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
-  const handleLogin = async (e) => {
+const handleLogin = async (e) => {
   e.preventDefault();
   setLoading(true);
   setError("");
 
   try {
-    const res = await api.post("/auth/login", {
-      email,
-      password,
-    });
-
-    // ✅ SAVE TOKEN
-    localStorage.setItem("token", res.data.token);
-
-    // (optional UI flag)
-    localStorage.setItem("isAdminLoggedIn", "true");
-
-    navigate("/admin");
+    await api.post("/auth/login", { email, password });
+    navigate("/admin", { replace: true });
   } catch (err) {
     setError(err.response?.data?.error || "Login failed");
   } finally {
     setLoading(false);
   }
 };
+
 
 
   return (

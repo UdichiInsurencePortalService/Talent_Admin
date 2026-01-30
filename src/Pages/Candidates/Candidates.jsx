@@ -63,7 +63,7 @@ const Candidates = () => {
     form.append("file", file);
 
     await axios.post(
-      "http://localhost:8080/api/candidates/upload",
+      "https://talent-backend-i83x.onrender.com/api/candidates/upload",
       form
     );
 

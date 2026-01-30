@@ -6,6 +6,7 @@ import {
   LineChartOutlined,
   UploadOutlined,
 } from "@ant-design/icons";
+import './Exam.css'
 import { Modal, Input, Button, Upload, message } from "antd";
 import axios from "axios";
 import Livemonitoring from "./Livemonitoring";
@@ -40,6 +41,13 @@ export const Exams = () => {
   const [examTime, setExamTime] = useState("");
   const [scheduleDuration, setScheduleDuration] = useState("");
   const [assessorName, setassessorName] = useState("");
+  const [institutionName, setInstitutionName] = useState("");
+const [centerCity, setCenterCity] = useState("");
+const [centerArea, setCenterArea] = useState("");
+const [centerLat, setCenterLat] = useState("");
+const [centerLng, setCenterLng] = useState("");
+const [allowedRadius, setAllowedRadius] = useState("100");
+
 
 
   /* ================= CREATE EXAM SUBMIT ================= */
@@ -65,7 +73,7 @@ export const Exams = () => {
 
     try {
       setCreateLoading(true);
-      await axios.post("https://talent-backend-i83x.onrender.com/api/create-exam", formData, {
+      await axios.post("http://localhost:8080/api/create-exam", formData, {
         withCredentials: true,
       });
 
@@ -102,19 +110,27 @@ export const Exams = () => {
   try {
     setScheduleLoading(true);
 
-    await axios.post(
-      "https://talent-backend-i83x.onrender.com/api/schedule-exam",
-      {
-        exam_code: examCode,
-        exam_name: scheduleExamName,
-        subject_name: scheduleSubject,
-        exam_date: examDate,
-        exam_time: examTime,
-        duration_minutes: Number(scheduleDuration),
-        assessor_name: assessorName,
-      },
-      { withCredentials: true }
-    );
+  await axios.post(
+  "http://localhost:8080/api/schedule-exam",
+  {
+    exam_code: examCode,
+    exam_name: scheduleExamName,
+    subject_name: scheduleSubject,
+    exam_date: examDate,
+    exam_time: examTime,
+    duration_minutes: Number(scheduleDuration),
+    assessor_name: assessorName,
+
+    // 🔽 NEW CENTER FIELDS
+    institution_name: institutionName,
+    center_city: centerCity,
+    center_area: centerArea,
+    center_lat: Number(centerLat),
+    center_lng: Number(centerLng),
+    allowed_radius: Number(allowedRadius),
+  },
+  { withCredentials: true }
+);
 
     message.success("📅 Exam scheduled successfully");
 
@@ -127,6 +143,13 @@ export const Exams = () => {
     setScheduleDuration("");
     setassessorName("");
     setScheduleOpen(false);
+    setInstitutionName("");
+setCenterCity("");
+setCenterArea("");
+setCenterLat("");
+setCenterLng("");
+setAllowedRadius("100");
+
   } catch (err) {
     message.error("❌ Failed to schedule exam");
   } finally {
@@ -237,78 +260,129 @@ export const Exams = () => {
       </Modal>
 
       {/* ================= SCHEDULE EXAM MODAL ================= */}
-      <Modal
-        title="Schedule Exam"
-        open={scheduleOpen}
-        onCancel={() => setScheduleOpen(false)}
-        footer={null}
-        centered
-      >
-        {/* 🔹 Exam Code */}
-        <Input
-          placeholder="Exam Code (ex: auto_mechanic_01)"
-          value={examCode}
-          onChange={(e) => setExamCode(e.target.value)}
-        />
+   <Modal
+  title={<span className="modal-title">Schedule Exam</span>}
+  open={scheduleOpen}
+  onCancel={() => setScheduleOpen(false)}
+  footer={null}
+  centered
+  width={620}
+>
+  {/* ================= BASIC DETAILS ================= */}
+  <div className="section-box">
+    <h4 className="section-title">📘 Exam Details</h4>
 
-        {/* 🔹 Exam Name */}
-        <Input
-          placeholder="Exam Name"
-          value={scheduleExamName}
-          onChange={(e) => setScheduleExamName(e.target.value)}
-          style={{ marginTop: 10 }}
-        />
+    <Input
+      placeholder="Exam Code (e.g. auto_mechanic_01)"
+      value={examCode}
+      onChange={(e) => setExamCode(e.target.value)}
+      className="custom-input"
+    />
 
-        {/* 🔹 Subject */}
-        <Input
-          placeholder="Subject Name"
-          value={scheduleSubject}
-          onChange={(e) => setScheduleSubject(e.target.value)}
-          style={{ marginTop: 10 }}
-        />
+    <Input
+      placeholder="Exam Name"
+      value={scheduleExamName}
+      onChange={(e) => setScheduleExamName(e.target.value)}
+      className="custom-input"
+    />
 
-        {/* 🔹 Date */}
-        <Input
-          type="date"
-          value={examDate}
-          onChange={(e) => setExamDate(e.target.value)}
-          style={{ marginTop: 10 }}
-        />
+    <Input
+      placeholder="Subject Name"
+      value={scheduleSubject}
+      onChange={(e) => setScheduleSubject(e.target.value)}
+      className="custom-input"
+    />
 
-        {/* 🔹 Time */}
-        <Input
-          type="time"
-          value={examTime}
-          onChange={(e) => setExamTime(e.target.value)}
-          style={{ marginTop: 10 }}
-        />
+    <div className="grid-2">
+      <Input
+        type="date"
+        value={examDate}
+        onChange={(e) => setExamDate(e.target.value)}
+        className="custom-input"
+      />
+      <Input
+        type="time"
+        value={examTime}
+        onChange={(e) => setExamTime(e.target.value)}
+        className="custom-input"
+      />
+    </div>
 
-        {/* 🔹 Duration */}
-        <Input
-          type="number"
-          placeholder="Duration (minutes)"
-          value={scheduleDuration}
-          onChange={(e) => setScheduleDuration(e.target.value)}
-          style={{ marginTop: 10 }}
-        />
-       <Input
-  type="text"
-  placeholder="Assessor Name"
-  value={assessorName}
-  onChange={(e) => setassessorName(e.target.value)}
-  style={{ marginTop: 10 }}
-/>
+    <Input
+      type="number"
+      placeholder="Duration (minutes)"
+      value={scheduleDuration}
+      onChange={(e) => setScheduleDuration(e.target.value)}
+      className="custom-input"
+    />
 
+    <Input
+      placeholder="Assessor Name"
+      value={assessorName}
+      onChange={(e) => setassessorName(e.target.value)}
+      className="custom-input"
+    />
+  </div>
 
-        <Button
-          type="primary"
-          loading={scheduleLoading}
-          onClick={handleScheduleExam}
-          style={{ marginTop: 15, width: "100%" }}
-        >
-          Schedule Exam
-        </Button>
-      </Modal>
+  {/* ================= CENTER DETAILS ================= */}
+  <div className="section-box">
+    <h4 className="section-title">📍 Exam Center Details</h4>
+
+    <Input
+      placeholder="Institution Name (e.g. ABC Skill Center)"
+      value={institutionName}
+      onChange={(e) => setInstitutionName(e.target.value)}
+      className="custom-input"
+    />
+
+    <Input
+      placeholder="City (e.g. Noida)"
+      value={centerCity}
+      onChange={(e) => setCenterCity(e.target.value)}
+      className="custom-input"
+    />
+
+    <Input
+      placeholder="Area / Sector (e.g. Sector 18)"
+      value={centerArea}
+      onChange={(e) => setCenterArea(e.target.value)}
+      className="custom-input"
+    />
+
+    <div className="grid-2">
+      <Input
+        placeholder="Latitude (Google Maps)"
+        value={centerLat}
+        onChange={(e) => setCenterLat(e.target.value)}
+        className="custom-input"
+      />
+      <Input
+        placeholder="Longitude (Google Maps)"
+        value={centerLng}
+        onChange={(e) => setCenterLng(e.target.value)}
+        className="custom-input"
+      />
+    </div>
+
+    <Input
+      type="number"
+      placeholder="Allowed Radius (meters)"
+      value={allowedRadius}
+      onChange={(e) => setAllowedRadius(e.target.value)}
+      className="custom-input"
+    />
+  </div>
+
+  <Button
+    type="primary"
+    loading={scheduleLoading}
+    onClick={handleScheduleExam}
+    className="submit-btn"
+  >
+    Schedule Exam
+  </Button>
+</Modal>
+
 
       {/* ================= STYLES ================= */}
       <style>{`
