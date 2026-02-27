@@ -21,6 +21,7 @@ import Candidates from '../../Pages/Candidates/Candidates';
 import Scheduled from '../../Pages/Scheduled/Scheduled';
 import QuestionBank from '../../Pages/QuestionBank/QuestionBank';
 import Attendence from '../../Pages/Attendence/Attendence';
+import Results from '../../Pages/Results/Results';
 
 const { Header, Sider, Content } = Layout;
 const { useBreakpoint } = Grid;
@@ -96,6 +97,8 @@ const handleLogout = () => {
 
     { key: 'candidates', icon: <UserOutlined />, label: 'Candidates' },
     { key: 'question', icon: <FileTextOutlined />, label: 'Question Bank' },
+            { key: 'Results', icon: <ScheduleOutlined />, label: 'Result' },
+
     { key: 'stats', icon: <LineChartOutlined />, label: 'Statistics' },
     { key: 'support', icon: <QuestionCircleOutlined />, label: 'Help & Support' },
   ];
@@ -125,6 +128,9 @@ const handleLogout = () => {
 
    function renderAttendence() {
     return (<Attendence/>)
+  }
+    function renderResults() {
+    return (<Results/>)
   }
 
   // function renderOtherPages() {
@@ -220,7 +226,7 @@ const handleLogout = () => {
           {selected === 'question' && renderQuestions()}
             {selected === 'scheduled' && renderScheduled()}
             {selected === 'Attendence' && renderAttendence()}
-
+            {selected === 'Results' && renderResults()}
 
 
 
