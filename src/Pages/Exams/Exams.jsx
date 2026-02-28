@@ -9,7 +9,7 @@ import {
 import "./Exam.css";
 import { Modal, Input, Button, Upload, message } from "antd";
 import axios from "axios";
-import LiveMonitoring from "./Livemonitoring"; // ✅ REQUIRED
+import LiveMonitoring from "./Livemonitoring";
 
 export const Exams = () => {
   /* ================= CREATE EXAM ================= */
@@ -23,13 +23,20 @@ export const Exams = () => {
   /* ================= SCHEDULE EXAM ================= */
   const [scheduleOpen, setScheduleOpen] = useState(false);
   const [scheduleLoading, setScheduleLoading] = useState(false);
+
   const [examCode, setExamCode] = useState("");
   const [scheduleExamName, setScheduleExamName] = useState("");
   const [scheduleSubject, setScheduleSubject] = useState("");
   const [examDate, setExamDate] = useState("");
   const [examTime, setExamTime] = useState("");
-  const [scheduleDuration, setScheduleDuration] = useState("");
-  const [assessorName, setassessorName] = useState("");
+  const [durationMinutes, setDurationMinutes] = useState("");
+  const [assessorName, setAssessorName] = useState("");
+  const [institutionName, setInstitutionName] = useState("");
+  const [centerCity, setCenterCity] = useState("");
+  const [centerArea, setCenterArea] = useState("");
+  const [centerLat, setCenterLat] = useState("");
+  const [centerLng, setCenterLng] = useState("");
+  const [allowedRadius, setAllowedRadius] = useState(100);
 
   /* ================= LIVE MONITORING ================= */
   const [liveOpen, setLiveOpen] = useState(false);
@@ -63,24 +70,47 @@ export const Exams = () => {
   /* ================= SCHEDULE EXAM SUBMIT ================= */
   const handleScheduleExam = async () => {
     if (!examCode || !scheduleExamName || !examDate || !examTime) {
-      message.error("Fill schedule fields");
+      message.error("Please fill required fields");
       return;
     }
 
     try {
       setScheduleLoading(true);
+
       await axios.post("https://talent-backend-i83x.onrender.com/api/schedule-exam", {
         exam_code: examCode,
         exam_name: scheduleExamName,
         subject_name: scheduleSubject,
         exam_date: examDate,
         exam_time: examTime,
-        duration_minutes: scheduleDuration,
+        duration_minutes: durationMinutes,
         assessor_name: assessorName,
+        institution_name: institutionName,
+        center_city: centerCity,
+        center_area: centerArea,
+        center_lat: centerLat,
+        center_lng: centerLng,
+        allowed_radius: allowedRadius || 100,
       });
-      message.success("Exam scheduled");
+
+      message.success("Exam Scheduled Successfully");
       setScheduleOpen(false);
-    } catch {
+
+      // Optional: reset fields after save
+      setExamCode("");
+      setScheduleExamName("");
+      setScheduleSubject("");
+      setExamDate("");
+      setExamTime("");
+      setDurationMinutes("");
+      setAssessorName("");
+      setInstitutionName("");
+      setCenterCity("");
+      setCenterArea("");
+      setCenterLat("");
+      setCenterLng("");
+      setAllowedRadius(100);
+    } catch (error) {
       message.error("Schedule failed");
     } finally {
       setScheduleLoading(false);
@@ -89,9 +119,8 @@ export const Exams = () => {
 
   return (
     <>
-      {/* ================= DASHBOARD CARDS ================= */}
+      {/* ================= DASHBOARD ================= */}
       <div className="exam-grid">
-        {/* CREATE */}
         <div
           className="exam-action-card create"
           onClick={() => setCreateExamOpen(true)}
@@ -103,7 +132,6 @@ export const Exams = () => {
           <p>Upload questions</p>
         </div>
 
-        {/* SCHEDULE */}
         <div
           className="exam-action-card schedule"
           onClick={() => setScheduleOpen(true)}
@@ -112,10 +140,9 @@ export const Exams = () => {
             <VideoCameraOutlined />
           </div>
           <h3>Schedule Exam</h3>
-          <p>Set date & time</p>
+          <p>Set complete exam details</p>
         </div>
 
-        {/* ✅ LIVE MONITORING (THIS WAS MISSING) */}
         <div
           className="exam-action-card live"
           onClick={() => setLiveOpen(true)}
@@ -124,10 +151,9 @@ export const Exams = () => {
             <DashboardOutlined />
           </div>
           <h3>Live Monitoring</h3>
-          <p>Track students during exam</p>
+          <p>Track students</p>
         </div>
 
-        {/* RESULTS */}
         <div className="exam-action-card result">
           <div className="icon-box">
             <LineChartOutlined />
@@ -137,71 +163,61 @@ export const Exams = () => {
         </div>
       </div>
 
-      {/* ================= LIVE MONITORING MODAL ================= */}
-      <Modal
-        title="Live Monitoring"
-        open={liveOpen}
-        onCancel={() => setLiveOpen(false)}
-        footer={null}
-        width={900}
-      >
-        <Input
-          placeholder="Enter Exam Code"
-          value={liveExamCode}
-          onChange={(e) => setLiveExamCode(e.target.value)}
-          style={{ marginBottom: 12 }}
-        />
-
-        {liveExamCode && <LiveMonitoring examCode={liveExamCode} />}
-      </Modal>
-
-      {/* ================= CREATE EXAM MODAL ================= */}
-      <Modal
-        title="Create Exam"
-        open={createExamOpen}
-        onCancel={() => setCreateExamOpen(false)}
-        footer={null}
-      >
-        <Input
-          placeholder="Exam Name"
-          value={examName}
-          onChange={(e) => setExamName(e.target.value)}
-        />
-        <Input
-          placeholder="Subject Name"
-          value={subjectName}
-          onChange={(e) => setSubjectName(e.target.value)}
-          style={{ marginTop: 10 }}
-        />
-        <Input
-          type="number"
-          placeholder="Duration"
-          value={duration}
-          onChange={(e) => setDuration(e.target.value)}
-          style={{ marginTop: 10 }}
-        />
-
-        <Upload beforeUpload={(f) => (setPdfFile(f), false)}>
-          <Button icon={<UploadOutlined />}>Upload Questions</Button>
-        </Upload>
-
-        <Button
-          type="primary"
-          loading={createLoading}
-          onClick={handleCreateExam}
-          style={{ marginTop: 15, width: "100%" }}
-        >
-          Create Exam
-        </Button>
-      </Modal>
-
-      {/* ================= SCHEDULE EXAM MODAL ================= */}
+      {/* ================= SCHEDULE MODAL ================= */}
       <Modal
         title="Schedule Exam"
         open={scheduleOpen}
         onCancel={() => setScheduleOpen(false)}
         footer={null}
+        width={650}
       >
+        <Input placeholder="Exam Code" value={examCode}
+          onChange={(e) => setExamCode(e.target.value)} style={{ marginBottom: 10 }} />
+
+        <Input placeholder="Exam Name" value={scheduleExamName}
+          onChange={(e) => setScheduleExamName(e.target.value)} style={{ marginBottom: 10 }} />
+
+        <Input placeholder="Subject Name" value={scheduleSubject}
+          onChange={(e) => setScheduleSubject(e.target.value)} style={{ marginBottom: 10 }} />
+
+        <Input type="date" value={examDate}
+          onChange={(e) => setExamDate(e.target.value)} style={{ marginBottom: 10 }} />
+
+        <Input type="time" value={examTime}
+          onChange={(e) => setExamTime(e.target.value)} style={{ marginBottom: 10 }} />
+
+        <Input type="number" placeholder="Duration (Minutes)"
+          value={durationMinutes}
+          onChange={(e) => setDurationMinutes(e.target.value)} style={{ marginBottom: 10 }} />
+
+        <Input placeholder="Assessor Name"
+          value={assessorName}
+          onChange={(e) => setAssessorName(e.target.value)} style={{ marginBottom: 10 }} />
+
+        <Input placeholder="Institution Name"
+          value={institutionName}
+          onChange={(e) => setInstitutionName(e.target.value)} style={{ marginBottom: 10 }} />
+
+        <Input placeholder="Center City"
+          value={centerCity}
+          onChange={(e) => setCenterCity(e.target.value)} style={{ marginBottom: 10 }} />
+
+        <Input placeholder="Center Area"
+          value={centerArea}
+          onChange={(e) => setCenterArea(e.target.value)} style={{ marginBottom: 10 }} />
+
+        <Input type="number" placeholder="Center Latitude"
+          value={centerLat}
+          onChange={(e) => setCenterLat(e.target.value)} style={{ marginBottom: 10 }} />
+
+        <Input type="number" placeholder="Center Longitude"
+          value={centerLng}
+          onChange={(e) => setCenterLng(e.target.value)} style={{ marginBottom: 10 }} />
+
+        <Input type="number" placeholder="Allowed Radius (Meters)"
+          value={allowedRadius}
+          onChange={(e) => setAllowedRadius(e.target.value)} style={{ marginBottom: 15 }} />
+
         <Button
           type="primary"
           loading={scheduleLoading}
