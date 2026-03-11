@@ -1,33 +1,26 @@
 import React, { useEffect, useState, useMemo } from "react";
 import axios from "axios";
-import {
-  Table,
-  Modal,
-  Image,
-  Tag,
-  Spin,
-  message,
-  Input,
-} from "antd";
+import { Table, Modal, Image, Tag, Spin, message, Input } from "antd";
 import { SearchOutlined } from "@ant-design/icons";
-import "./attendance.css"; // animation css
 
 const Attendence = () => {
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(true);
 
   const [search, setSearch] = useState("");
-  const [debouncedSearch, setDebouncedSearch] = useState("");
-
   const [previewOpen, setPreviewOpen] = useState(false);
   const [previewImage, setPreviewImage] = useState("");
 
-  /* ================= FETCH ATTENDANCE ================= */
+  // ================= FETCH =================
+
   const fetchAttendance = async () => {
     try {
-      const res = await axios.get("https://talent-backend-i83x.onrender.com/api/attendance");
-      setData(res.data.data || []);
-    } catch (err) {
+      const res = await axios.get("https://talent-assess.in/api/attendance");
+
+      if (res.data.success) {
+        setData(res.data.data);
+      }
+    } catch {
       message.error("Failed to load attendance");
     } finally {
       setLoading(false);
@@ -38,67 +31,52 @@ const Attendence = () => {
     fetchAttendance();
   }, []);
 
-  /* ================= DEBOUNCE SEARCH ================= */
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      setDebouncedSearch(search.trim().toLowerCase());
-    }, 500);
+  // ================= SEARCH =================
 
-    return () => clearTimeout(timer);
-  }, [search]);
-
-  /* ================= FILTERED DATA ================= */
   const filteredData = useMemo(() => {
-    if (!debouncedSearch) return data;
+    if (!search) return data;
 
     return data.filter((item) =>
-      item.exam_code?.toLowerCase().includes(debouncedSearch)
+      item.exam_code?.toLowerCase().includes(search.toLowerCase())
     );
-  }, [data, debouncedSearch]);
+  }, [search, data]);
 
-  /* ================= TABLE COLUMNS ================= */
+  // ================= TABLE =================
+
   const columns = [
     {
       title: "Exam Code",
       dataIndex: "exam_code",
-      key: "exam_code",
-      fixed: "left",
-      width: 130,
+      width: 150,
     },
     {
-      title: "Institution",
+      title: "Institution Name ",
       dataIndex: "institution_name",
-      key: "institution_name",
-      width: 180,
+      width: 300,
     },
     {
       title: "Candidate Name",
       dataIndex: "full_name",
-      key: "full_name",
-      width: 180,
+      width: 280,
     },
     {
       title: "Father Name",
       dataIndex: "father_name",
-      key: "father_name",
-      width: 180,
+      width: 380,
     },
     {
       title: "Mobile",
       dataIndex: "mobile_number",
-      key: "mobile_number",
-      width: 140,
+      width: 150,
     },
     {
       title: "Aadhar",
       dataIndex: "aadhar_number",
-      key: "aadhar_number",
-      width: 160,
-      render: (val) => (val ? `XXXX-XXXX-${val.slice(-4)}` : "-"),
+      width: 250,
+      render: (val) => `XXXX-XXXX-${val?.slice(-4)}`,
     },
     {
       title: "Photo",
-      key: "photo",
       width: 120,
       render: (_, record) =>
         record.photo_url ? (
@@ -106,7 +84,7 @@ const Attendence = () => {
             src={record.photo_url}
             width={50}
             height={50}
-            style={{ borderRadius: 8, cursor: "pointer" }}
+            style={{ borderRadius: 6, cursor: "pointer" }}
             preview={false}
             onClick={() => {
               setPreviewImage(record.photo_url);
@@ -118,20 +96,18 @@ const Attendence = () => {
         ),
     },
     {
-      title: "Location Status",
-      key: "attendance_status",
-      width: 160,
+      title: "Location",
+      width: 150,
       render: (_, record) =>
         record.attendance_status === "IN_CENTER" ? (
           <Tag color="green">Inside Center</Tag>
         ) : (
-          <Tag color="red">Outside Center</Tag>
+          <Tag color="red">Outside</Tag>
         ),
     },
     {
-      title: "Date & Time",
+      title: "Date",
       dataIndex: "created_at",
-      key: "created_at",
       width: 200,
       render: (date) => new Date(date).toLocaleString(),
     },
@@ -139,25 +115,30 @@ const Attendence = () => {
 
   if (loading) {
     return (
-      <div style={{ textAlign: "center", marginTop: 100 }}>
+      <div style={{ textAlign: "center", marginTop: 120 }}>
         <Spin size="large" />
       </div>
     );
   }
 
   return (
-    <div style={{ padding: 24 }}>
-      {/* ================= HEADER + SEARCH ================= */}
-      <div className="attendance-header">
-        <h2>📋 Attendance Records</h2>
+    <div style={{ padding: 20 }}>
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "space-between",
+          marginBottom: 16,
+        }}
+      >
+        <h2>Attendance Records</h2>
 
         <Input
-          allowClear
-          placeholder="Search by Exam Code"
+          placeholder="Search Exam Code"
           prefix={<SearchOutlined />}
+          allowClear
           value={search}
           onChange={(e) => setSearch(e.target.value)}
-          className="attendance-search"
+          style={{ width: 250 }}
         />
       </div>
 
@@ -166,30 +147,12 @@ const Attendence = () => {
         dataSource={filteredData}
         rowKey="id"
         bordered
-        scroll={{ x: 1300 }}
-        pagination={{
-          pageSize: 8,
-          showTotal: (total) => `Total ${total} records`,
-        }}
-        style={{
-          background: "#fff",
-          borderRadius: 12,
-          marginTop: 16,
-        }}
+        scroll={{ x: 1200 }}
+        pagination={{ pageSize: 8 }}
       />
 
-      {/* ================= IMAGE PREVIEW MODAL ================= */}
-      <Modal
-        open={previewOpen}
-        footer={null}
-        onCancel={() => setPreviewOpen(false)}
-        centered
-      >
-        <Image
-          src={previewImage}
-          alt="Attendance Photo"
-          style={{ width: "100%", borderRadius: 12 }}
-        />
+      <Modal open={previewOpen} footer={null} onCancel={() => setPreviewOpen(false)}>
+        <Image src={previewImage} style={{ width: "100%" }} />
       </Modal>
     </div>
   );

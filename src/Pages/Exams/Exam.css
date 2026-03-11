@@ -1,65 +1,129 @@
-/* ================= MODAL ================= */
-.modal-title {
-  font-size: 18px;
-  font-weight: 800;
-  color: #111827;
+/* ===== EXAM PAGE STYLES ===== */
+
+.exam-page {
+  padding: 32px;
+  min-height: 100vh;
+  background: #f0f4ff;
+  font-family: 'Segoe UI', sans-serif;
 }
 
-/* ================= SECTIONS ================= */
-.section-box {
-  margin-bottom: 18px;
-  padding: 14px;
-  border-radius: 12px;
-  background: #f9fafb;
-  border: 1px solid #e5e7eb;
+.exam-page-title {
+  font-size: 22px;
+  font-weight: 700;
+  color: #1a1f36;
+  margin-bottom: 28px;
+  letter-spacing: -0.3px;
 }
 
-.section-title {
-  font-size: 14px;
-  font-weight: 800;
-  margin-bottom: 12px;
-  color: #0f172a;
-  border-left: 4px solid #2563eb;
-  padding-left: 10px;
+/* ===== GRID ===== */
+.exam-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 20px;
+  max-width: 1000px;
 }
 
-/* ================= INPUTS ================= */
-.custom-input {
-  margin-bottom: 10px;
-  height: 42px;
-  font-weight: 600;
+/* ===== ACTION CARDS ===== */
+.exam-action-card {
+  background: #ffffff;
+  border-radius: 16px;
+  padding: 28px 24px;
+  cursor: pointer;
+  transition: transform 0.18s ease, box-shadow 0.18s ease;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.07);
+  border: 1.5px solid transparent;
+  position: relative;
+  overflow: hidden;
 }
 
-.custom-input input {
-  font-weight: 600;
-  color: #111827;
+.exam-action-card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 4px;
+  border-radius: 16px 16px 0 0;
 }
 
-.custom-input::placeholder,
-.custom-input input::placeholder {
-  color: #6b7280 !important;
-  font-weight: 600;
+.exam-action-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 10px 28px rgba(0, 0, 0, 0.12);
 }
 
-/* ================= GRID ================= */
-.grid-2 {
+/* Color accents per card */
+.exam-action-card.create::before  { background: linear-gradient(90deg, #4f46e5, #7c3aed); }
+.exam-action-card.schedule::before { background: linear-gradient(90deg, #0ea5e9, #06b6d4); }
+.exam-action-card.live::before    { background: linear-gradient(90deg, #10b981, #34d399); }
+.exam-action-card.result::before  { background: linear-gradient(90deg, #f59e0b, #f97316); }
+
+.exam-action-card.create:hover  { border-color: #4f46e5; }
+.exam-action-card.schedule:hover { border-color: #0ea5e9; }
+.exam-action-card.live:hover    { border-color: #10b981; }
+.exam-action-card.result:hover  { border-color: #f59e0b; }
+
+/* ===== ICON BOX ===== */
+.icon-box {
+  width: 52px;
+  height: 52px;
+  border-radius: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 22px;
+  margin-bottom: 16px;
+}
+
+.exam-action-card.create  .icon-box { background: #ede9fe; color: #4f46e5; }
+.exam-action-card.schedule .icon-box { background: #e0f2fe; color: #0ea5e9; }
+.exam-action-card.live    .icon-box { background: #d1fae5; color: #10b981; }
+.exam-action-card.result  .icon-box { background: #fef3c7; color: #f59e0b; }
+
+.exam-action-card h3 {
+  margin: 0 0 6px;
+  font-size: 16px;
+  font-weight: 700;
+  color: #1a1f36;
+}
+
+.exam-action-card p {
+  margin: 0;
+  font-size: 13px;
+  color: #6b7280;
+}
+
+/* ===== MODAL FORM ===== */
+.modal-form-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 10px;
 }
 
-/* ================= BUTTON ================= */
-.submit-btn {
-  margin-top: 10px;
-  width: 100%;
-  height: 44px;
-  font-weight: 800;
-  font-size: 15px;
+.modal-form-grid .full-width {
+  grid-column: 1 / -1;
 }
 
-/* ================= MOBILE ================= */
-@media (max-width: 600px) {
-  .grid-2 {
-    grid-template-columns: 1fr;
-  }
+.modal-label {
+  font-size: 12px;
+  font-weight: 600;
+  color: #374151;
+  margin-bottom: 4px;
+  display: block;
+}
+
+.field-group {
+  display: flex;
+  flex-direction: column;
+}
+
+.modal-submit-btn {
+  margin-top: 16px;
+  width: 100%;
+  height: 42px;
+  font-weight: 600;
+  font-size: 14px;
+  border-radius: 10px !important;
+}
+
+/* Live modal input */
+.live-modal-input {
+  margin-bottom: 12px;
 }

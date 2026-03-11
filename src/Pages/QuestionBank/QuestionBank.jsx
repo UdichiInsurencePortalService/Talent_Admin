@@ -23,7 +23,7 @@ export default function QuestionBank() {
   // ---------------- FETCH EXAMS ----------------
   useEffect(() => {
     axios
-      .get("https://talent-backend-i83x.onrender.com/api/exams")
+      .get("https://talent-assess.in/api/exams")
       .then((res) => {
         setExams(res.data.data || []);
       })

@@ -1,8 +1,11 @@
 import axios from "axios";
 
 const api = axios.create({
-  baseURL: "https://talent-backend-i83x.onrender.com/api",
-  withCredentials: true, // 🔥 REQUIRED FOR COOKIES
+  baseURL: "https://talent-assess.in/api",
+  withCredentials: true,
+  headers: {
+    "Content-Type": "application/json"
+  }
 });
 
 export default api;

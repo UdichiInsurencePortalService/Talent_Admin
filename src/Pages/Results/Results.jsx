@@ -10,7 +10,7 @@ const Results = () => {
   const fetchResults = async () => {
     try {
       setLoading(true);
-      const res = await axios.get("https://talent-backend-i83x.onrender.com/api/results");
+      const res = await axios.get("https://talent-assess.in/api/results");
       if (res.data.success) {
         setResults(res.data.data);
         setFilteredResults(res.data.data);

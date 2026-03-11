@@ -3,7 +3,7 @@ import { io } from "socket.io-client";
 import axios from "axios";
 import "./Livemonitoring.css";
 
-const SOCKET_URL = "https://talent-backend-i83x.onrender.com";
+const SOCKET_URL = "https://talent-assess.in";
 const socket = io(SOCKET_URL, { transports: ["websocket"] });
 
 export default function LiveMonitoring({ examCode }) {

@@ -11,14 +11,24 @@ export default function Login() {
 
 const handleLogin = async (e) => {
   e.preventDefault();
-  setLoading(true);
-  setError("");
 
   try {
-    await api.post("/auth/login", { email, password });
-    navigate("/admin", { replace: true });
-  } catch (err) {
-    setError(err.response?.data?.error || "Login failed");
+    setLoading(true);
+
+    const res = await api.post("/auth/login", {
+      email,
+      password
+    });
+
+    if (res.data.user) {
+      navigate("/admin");
+    }
+
+  } catch (error) {
+    setError(
+      error.response?.data?.error ||
+      "Login failed"
+    );
   } finally {
     setLoading(false);
   }

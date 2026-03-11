@@ -1,307 +1,127 @@
-import { useEffect, useMemo, useState } from "react";
+import { useState } from "react";
 import axios from "axios";
-
-const ITEMS_PER_PAGE = 20;
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const Candidates = () => {
-  const [file, setFile] = useState(null);
-  const [candidates, setCandidates] = useState([]);
-  const [showTable, setShowTable] = useState(false);
-  const [search, setSearch] = useState("");
-  const [debouncedSearch, setDebouncedSearch] = useState("");
-  const [currentPage, setCurrentPage] = useState(1);
-  const[examCode,setExamCode] = useState("")
+  const [email, setEmail] = useState("");
+  const [examCode, setExamCode] = useState("");
+  const [candidateName, setCandidateName] = useState("");
+  const [loading, setLoading] = useState(false);
 
-  /* =======================
-     FETCH DATA
-  ======================= */
-  const fetchCandidates = async () => {
-    const res = await axios.get("https://talent-backend-i83x.onrender.com/api/candidates");
-    setCandidates(res.data.data || []);
-  };
+  const sendLink = async () => {
+    if (!email || !examCode || !candidateName) {
+      toast.error("Please fill all fields");
+      return;
+    }
 
-  /* =======================
-     DEBOUNCE SEARCH
-  ======================= */
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      setDebouncedSearch(search.toLowerCase());
-      setCurrentPage(1);
-    }, 500);
+    try {
+      setLoading(true);
 
-    return () => clearTimeout(timer);
-  }, [search]);
+      await axios.post(
+        "https://talent-assess.in/api/exam/send-link",
+        {
+          email,
+          exam_code: examCode,
+          name: candidateName
+        }
+      );
 
-  /* =======================
-     FILTERED DATA
-  ======================= */
-  const filteredCandidates = useMemo(() => {
-    return candidates.filter(
-      (c) =>
-        c.full_name?.toLowerCase().includes(debouncedSearch) ||
-        c.institution_name?.toLowerCase().includes(debouncedSearch)
-    );
-  }, [candidates, debouncedSearch]);
+      toast.success("📧 Exam & Attendance link sent successfully");
 
-  /* =======================
-     PAGINATION
-  ======================= */
-  const totalPages = Math.ceil(filteredCandidates.length / ITEMS_PER_PAGE);
+      setEmail("");
+      setExamCode("");
+      setCandidateName("");
 
-  const paginatedData = filteredCandidates.slice(
-    (currentPage - 1) * ITEMS_PER_PAGE,
-    currentPage * ITEMS_PER_PAGE
-  );
+    } catch (err) {
+      toast.error("❌ Failed to send email");
+    }
 
-  /* =======================
-     FILE UPLOAD
-  ======================= */
-  const handleUpload = async () => {
-    if (!file) return alert("Please select a file");
-
-    const form = new FormData();
-    form.append("file", file);
-
-    await axios.post(
-      "https://talent-backend-i83x.onrender.com/api/candidates/upload",
-      form
-    );
-
-    alert("Uploaded successfully");
-    setFile(null);
-    fetchCandidates();
-  };
-
-  /* =======================
-     REMOVE DATA
-  ======================= */
-  const handleRemoveData = () => {
-    setCandidates([]);
-    setShowTable(false);
+    setLoading(false);
   };
 
   return (
     <div style={styles.container}>
-      <h2 style={styles.title}>👥 Candidates Management</h2>
 
-      {/* Upload Section */}
-      <div style={styles.uploadBox}>
-        <input
-          type="file"
-          accept=".pdf,.xlsx,.json"
-          onChange={(e) => setFile(e.target.files[0])}
-        />
+      <ToastContainer />
 
-        {file && (
-          <span style={styles.filePreview}>
-            {file.name}
-            <button onClick={() => setFile(null)} style={styles.crossBtn}>
-              ❌
-            </button>
-          </span>
-        )}
+      <div style={styles.card}>
+        <h2 style={styles.title}>Send Exam Link</h2>
 
-        <button onClick={handleUpload} style={styles.primaryBtn}>
-          Upload
-        </button>
-      </div>
+        
 
-      {/* Action Bar */}
-      <div style={styles.actionBar}>
         <input
           type="text"
-          placeholder="🔍 Search by Name or Institution"
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-          style={styles.search}
+          placeholder="Enter Exam Code"
+          value={examCode}
+          onChange={(e) => setExamCode(e.target.value)}
+          style={styles.input}
         />
 
-        <div>
-          <button
-            onClick={() => {
-              fetchCandidates();
-              setShowTable(true);
-            }}
-            style={styles.showBtn}
-          >
-            Show Data
-          </button>
+        <input
+          type="email"
+          placeholder="Enter Candidate Email"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          style={styles.input}
+        />
 
-          <button onClick={handleRemoveData} style={styles.removeBtn}>
-            Remove Data
-          </button>
-        </div>
+        <button
+          onClick={sendLink}
+          style={styles.button}
+          disabled={loading}
+        >
+          {loading ? "Sending..." : "Send Exam Link"}
+        </button>
+
       </div>
-
-      {/* Table */}
-      {showTable && (
-        <>
-
-<div style={{ marginBottom: 20, display: "flex", gap: 10 }}>
-  <input
-    placeholder="Enter Exam Code"
-    value={examCode}
-    onChange={(e) => setExamCode(e.target.value)}
-    style={styles.search}
-  />
-
-  <button
-    style={styles.primaryBtn}
-    onClick={async () => {
-      if (!examCode) return alert("Enter exam code");
-
-      await axios.post(
-        "http://localhost:8080/api/exam/send-link",
-        { exam_code: examCode }
-      );
-
-      alert("📧 Exam link sent to candidates");
-    }}
-  >
-    Send Exam Link
-  </button>
-</div>
-
-
-          <table style={styles.table}>
-            <thead>
-              <tr>
-                <th>Name</th>
-                <th>Father</th>
-                <th>Aadhar</th>
-                <th>Job Role</th>
-                <th>Email</th>
-                <th>Institution</th>
-              </tr>
-            </thead>
-            <tbody>
-              {paginatedData.length > 0 ? (
-                paginatedData.map((c) => (
-                  <tr key={c.id}>
-                    <td>{c.full_name}</td>
-                    <td>{c.father_name}</td>
-                    <td>{c.aadhar_number}</td>
-                    <td>{c.job_role}</td>
-                    <td>{c.email}</td>
-                    <td>{c.institution_name}</td>
-                  </tr>
-                ))
-              ) : (
-                <tr>
-                  <td colSpan="6" style={{ textAlign: "center" }}>
-                    No data found
-                  </td>
-                </tr>
-              )}
-            </tbody>
-          </table>
-
-          {/* Pagination */}
-          {totalPages > 1 && (
-            <div style={styles.pagination}>
-              <button
-                disabled={currentPage === 1}
-                onClick={() => setCurrentPage((p) => p - 1)}
-              >
-                ◀ Prev
-              </button>
-
-              <span>
-                Page {currentPage} of {totalPages}
-              </span>
-
-              <button
-                disabled={currentPage === totalPages}
-                onClick={() => setCurrentPage((p) => p + 1)}
-              >
-                Next ▶
-              </button>
-            </div>
-          )}
-        </>
-      )}
     </div>
   );
 };
 
-/* =======================
-   STYLES
-======================= */
 const styles = {
+
   container: {
-    padding: 30,
-    background: "#f8fafc",
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center",
+    height: "80vh",
+    background: "#f1f5f9"
+  },
+
+  card: {
+    background: "#fff",
+    padding: 35,
+    width: 380,
     borderRadius: 10,
+    boxShadow: "0 6px 15px rgba(0,0,0,0.1)",
+    display: "flex",
+    flexDirection: "column",
+    gap: 15
   },
+
   title: {
-    marginBottom: 20,
+    textAlign: "center",
+    marginBottom: 10
   },
-  uploadBox: {
-    display: "flex",
-    gap: 10,
-    alignItems: "center",
-    marginBottom: 20,
-  },
-  filePreview: {
-    background: "#e2e8f0",
-    padding: "4px 10px",
+
+  input: {
+    padding: 10,
     borderRadius: 6,
-    display: "flex",
-    alignItems: "center",
-    gap: 5,
+    border: "1px solid #ccc",
+    fontSize: 14
   },
-  crossBtn: {
-    border: "none",
-    background: "transparent",
-    cursor: "pointer",
-  },
-  primaryBtn: {
-    padding: "6px 14px",
+
+  button: {
+    padding: 12,
     background: "#2563eb",
     color: "#fff",
     border: "none",
     borderRadius: 6,
     cursor: "pointer",
-  },
-  actionBar: {
-    display: "flex",
-    justifyContent: "space-between",
-    marginBottom: 15,
-  },
-  search: {
-    padding: 8,
-    width: 300,
-    borderRadius: 6,
-    border: "1px solid #cbd5e1",
-  },
-  showBtn: {
-    padding: "6px 14px",
-    marginRight: 10,
-    background: "#16a34a",
-    color: "#fff",
-    border: "none",
-    borderRadius: 6,
-    cursor: "pointer",
-  },
-  removeBtn: {
-    padding: "6px 14px",
-    background: "#dc2626",
-    color: "#fff",
-    border: "none",
-    borderRadius: 6,
-    cursor: "pointer",
-  },
-  table: {
-    width: "100%",
-    borderCollapse: "collapse",
-    background: "#fff",
-  },
-  pagination: {
-    display: "flex",
-    justifyContent: "center",
-    gap: 20,
-    marginTop: 15,
-  },
+    fontWeight: "bold"
+  }
+
 };
 
 export default Candidates;
