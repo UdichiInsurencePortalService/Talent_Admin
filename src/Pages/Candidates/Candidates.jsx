@@ -10,12 +10,14 @@ const Candidates = () => {
   const [loading, setLoading] = useState(false);
 
   const sendLink = async () => {
+
     if (!email || !examCode || !candidateName) {
       toast.error("Please fill all fields");
       return;
     }
 
     try {
+
       setLoading(true);
 
       await axios.post(
@@ -27,14 +29,16 @@ const Candidates = () => {
         }
       );
 
-      toast.success("📧 Exam & Attendance link sent successfully");
+      toast.success("📧 Exam link sent successfully");
 
       setEmail("");
       setExamCode("");
       setCandidateName("");
 
     } catch (err) {
+
       toast.error("❌ Failed to send email");
+
     }
 
     setLoading(false);
@@ -48,8 +52,16 @@ const Candidates = () => {
       <div style={styles.card}>
         <h2 style={styles.title}>Send Exam Link</h2>
 
-        
+        {/* Candidate Name */}
+        <input
+          type="text"
+          placeholder="Enter Candidate Name"
+          value={candidateName}
+          onChange={(e) => setCandidateName(e.target.value)}
+          style={styles.input}
+        />
 
+        {/* Exam Code */}
         <input
           type="text"
           placeholder="Enter Exam Code"
@@ -58,6 +70,7 @@ const Candidates = () => {
           style={styles.input}
         />
 
+        {/* Email */}
         <input
           type="email"
           placeholder="Enter Candidate Email"
